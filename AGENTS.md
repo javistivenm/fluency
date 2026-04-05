@@ -1,146 +1,71 @@
 # AGENTS.md
 
 ## Scope
-- This file applies to the entire repository at `/home/javier/projects-dockploy/fluency`.
-- The repository is currently a minimal Django project.
-- Python version in the local virtualenv is `3.12.3`.
-- Django version in the local virtualenv is `5.2.12`.
+- Applies to the whole repo at `/home/javier/projects-dockploy/fluency`.
+- This is a minimal Django 5.2 project, not a multi-package repo.
 
-## Current Repository Layout
-- `manage.py` is the main entry point for local commands.
-- `config/settings.py` contains Django settings.
-- `config/urls.py` contains the root URL configuration.
-- `config/asgi.py` and `config/wsgi.py` expose deployment entry points.
-- There are currently no first-party apps beyond the generated `config` package.
-- There are currently no repository test modules.
-- There is currently no existing `AGENTS.md`; this file is the canonical agent guide.
+## Sources Of Truth
+- There is no root `README`, CI workflow, pre-commit config, or task runner config in this repo.
+- There is no `.cursor/rules/`, `.cursorrules`, `.github/copilot-instructions.md`, or `opencode.json`.
+- Trust the checked-in Django files and Dockerfile over generic Django assumptions.
 
-## Editor Rule Files
-- No `.cursor/rules/` directory was found.
-- No `.cursorrules` file was found.
-- No `.github/copilot-instructions.md` file was found.
-- Agents should not claim additional editor-specific rules exist unless those files are later added.
+## Runtime And Entrypoints
+- Use the repo virtualenv locally: `.venv/bin/python`.
+- Main command entrypoint: `manage.py`.
+- Django settings module defaults to `config.settings`.
+- Root URL config is `config/urls.py`.
+- WSGI entrypoint for deployment is `config.wsgi:application`.
+- `/` is served by `config.views.home` and returns a simple inline `HttpResponse`.
 
-## Environment Expectations
-- Prefer the checked-in virtualenv for local execution: `.venv/bin/python`.
-- Run commands from the repository root.
-- Assume Django settings module `config.settings` unless the user says otherwise.
-- The default database is SQLite at `db.sqlite3`.
-- `DEBUG = True` in current settings; do not treat this repo as production-ready.
-
-## Primary Commands
+## Verified Commands
 - Start dev server: `.venv/bin/python manage.py runserver`
-- Run Django system checks: `.venv/bin/python manage.py check`
-- Apply migrations: `.venv/bin/python manage.py migrate`
-- Create migrations: `.venv/bin/python manage.py makemigrations`
-- Open Django shell: `.venv/bin/python manage.py shell`
-- Collect static files if needed: `.venv/bin/python manage.py collectstatic`
-
-## Build Commands
-- There is currently no separate build toolchain configured.
-- For this repo, the closest equivalent to a build verification step is: `.venv/bin/python manage.py check`
-- If static assets, packaging, or frontend tooling are added later, update this section with the exact commands.
-
-## Lint Commands
-- There is currently no configured linter in the repository.
-- No `pyproject.toml`, `ruff.toml`, `mypy.ini`, `setup.cfg`, `.flake8`, or ESLint/Prettier config was found.
-- Do not invent `ruff`, `black`, `flake8`, or `mypy` commands as required checks unless the user explicitly asks for them.
-- If you add lint tooling in the future, document the exact invocation here.
-
-## Test Commands
+- Run system checks: `.venv/bin/python manage.py check`
 - Run all tests: `.venv/bin/python manage.py test`
-- Current observed result: the command runs successfully but reports `0` tests.
-- Django test discovery should be the default mechanism unless the repo later adopts `pytest`.
+- Create migrations: `.venv/bin/python manage.py makemigrations`
+- Verify no missing migrations: `.venv/bin/python manage.py makemigrations --check`
+- Apply migrations: `.venv/bin/python manage.py migrate`
+- Open Django shell: `.venv/bin/python manage.py shell`
 
-## Single-Test Commands
-- Run one test module: `.venv/bin/python manage.py test path.to.tests`
-- Run one test class: `.venv/bin/python manage.py test path.to.tests.MyTestCase`
-- Run one test method: `.venv/bin/python manage.py test path.to.tests.MyTestCase.test_method`
-- Example module form: `.venv/bin/python manage.py test myapp.tests`
-- Example class form: `.venv/bin/python manage.py test myapp.tests.SettingsTests`
-- Example method form: `.venv/bin/python manage.py test myapp.tests.SettingsTests.test_debug_default`
-- If an app is later added with a `tests.py` file, use that dotted module path.
-- Prefer the narrowest test target that covers the change you made.
+## Focused Test Commands
+- Single module: `.venv/bin/python manage.py test path.to.tests`
+- Single class: `.venv/bin/python manage.py test path.to.tests.MyTestCase`
+- Single method: `.venv/bin/python manage.py test path.to.tests.MyTestCase.test_method`
+- As of now, `manage.py test` succeeds but discovers `0` tests.
 
 ## Verification Expectations
-- Minimum verification for configuration-only changes: `.venv/bin/python manage.py check`
-- Minimum verification for behavior changes: `.venv/bin/python manage.py test`
-- If you add or modify migrations, also run: `.venv/bin/python manage.py makemigrations --check`
-- If a command cannot be run locally, say so explicitly in your final response.
+- For settings, URLs, views, or other config-only changes, run `.venv/bin/python manage.py check` at minimum.
+- If you add behavior with tests, run the narrowest relevant `manage.py test ...` target first.
+- If you add or edit migrations, also run `.venv/bin/python manage.py makemigrations --check`.
 
-## Code Style Overview
-- Match the existing Django-generated project style unless the repo adopts stricter tooling later.
-- Keep changes minimal and local.
-- Prefer straightforward Django conventions over custom abstractions.
-- Use 4-space indentation.
-- Keep lines reasonably short and readable; no exact formatter-enforced width is configured.
-- Use ASCII unless a file already requires Unicode.
+## Environment Quirks
+- `config/settings.py` reads environment variables directly via `os.getenv`; there is no `.env` loader configured.
+- `SECRET_KEY` comes from `DJANGO_SECRET_KEY` with a development fallback.
+- `DEBUG` is parsed as `os.getenv('DEBUG', 'True') == 'True'`; only the exact string `True` enables debug.
+- `ALLOWED_HOSTS` is parsed from a comma-separated `ALLOWED_HOSTS` env var and defaults to `127.0.0.1,localhost`.
+- Django is configured for PostgreSQL via `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, and `DB_PORT`.
+- Default local database settings are `fluency_local` on `127.0.0.1:5432` with user `fluency_local_user`.
+- `APP_ENV` is only used by `config.views.home` for display; it does not switch settings modules or behavior elsewhere.
 
-## Imports
-- Group imports in this order: standard library, third-party, local application imports.
-- Separate import groups with a blank line.
-- Prefer explicit imports over wildcard imports.
-- Keep import style consistent with current files, for example `from pathlib import Path`.
-- Remove unused imports when touching a file.
+## Docker / Deploy
+- The repo includes a root `Dockerfile` and `.dockerignore`.
+- Container build installs from `requirements.txt`; if you add a runtime dependency, update `requirements.txt` or the image will fail.
+- Container startup command is `python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}`.
+- `PORT` defaults to `8000` in the Dockerfile.
 
-## Formatting
-- Follow existing spacing and blank-line patterns in `manage.py` and `config/*.py`.
-- Preserve concise module docstrings where Django generated them.
-- Do not reformat unrelated files just to satisfy a personal preference.
-- Avoid adding comments for obvious code.
-- Add a short comment only when logic is non-obvious.
+## Tooling Reality
+- `requirements.txt` currently pins Django, gunicorn, asgiref, packaging, and sqlparse.
+- No linter, formatter, type checker, or pytest config is present.
+- Do not claim `ruff`, `black`, `flake8`, `mypy`, or `pytest` are required unless you add and verify that tooling.
 
-## Types
-- There is currently no type-checking configuration in the repository.
-- Do not introduce large-scale type annotation churn into generated Django files.
-- For new non-trivial functions, add type hints when they improve clarity.
-- Prefer simple built-in typing syntax on Python 3.12, for example `list[str]`.
-- Keep type usage consistent within the file you are editing.
+## Editing Conventions Observed In Repo
+- Keep changes small and local; this codebase is still close to Django defaults.
+- Preserve single-quoted Python strings when touching existing files.
+- Imports currently follow standard-library then third-party/local grouping with a blank line between groups.
+- Keep configuration in `config/settings.py` unless there is a concrete reason to split it.
+- Register simple routes directly in `config/urls.py` until a real app module exists.
+- There are no first-party Django apps yet beyond the generated `config` package; if you create one, remember to add it to `INSTALLED_APPS`.
 
-## Naming Conventions
-- Use `snake_case` for functions, variables, and module names.
-- Use `PascalCase` for classes.
-- Use `UPPER_SNAKE_CASE` for module-level constants and Django settings.
-- Name Django apps, modules, URLs, and settings according to normal Django conventions.
-- Prefer descriptive names over abbreviations unless the abbreviation is already standard in Django.
-
-## Django Conventions
-- Keep configuration in `config/settings.py` unless there is a clear reason to split settings.
-- Register new URLs in `config/urls.py` or include app-specific URLconfs once apps exist.
-- Use Django management commands instead of ad hoc scripts when an equivalent command exists.
-- Prefer framework defaults before adding custom infrastructure.
-- If creating a new app, use Django's standard layout and register it in `INSTALLED_APPS`.
-
-## Error Handling
-- Raise specific exceptions instead of broad `Exception` where practical.
-- Preserve exception chaining when re-raising, as seen in `manage.py` using `raise ... from exc`.
-- Fail loudly on configuration errors rather than hiding them.
-- Do not swallow exceptions without a concrete reason.
-- User-facing messages should be clear and actionable.
-
-## Testing Guidance
-- Add focused tests with behavior changes.
-- Prefer Django's built-in test framework unless the repo formally adopts another runner.
-- Keep tests close to the app they cover.
-- When adding a regression test, name it after the behavior or bug being protected.
-- Run the smallest relevant test target first, then broader coverage if needed.
-
-## Change Discipline For Agents
-- Read the surrounding file before editing.
-- Do not assume tooling exists if it is not configured in the repo.
-- Do not add new dependencies without a clear need.
-- Do not rewrite generated Django files without a reason tied to the task.
-- Do not modify unrelated files in the same change.
-- Keep commits and diffs easy to review.
-
-## Repository-Specific Notes
-- This repository currently looks like a freshly generated Django project.
-- Existing code uses single-quoted strings in Python files; preserve that style in touched files.
-- Existing files are lightly structured and mostly framework-generated; match that simplicity.
-- Since no dedicated lint or format config exists, consistency with neighboring code matters more than external style defaults.
-
-## When Updating This File
-- Prefer facts verified from the repository over generic advice.
-- Add exact commands, not approximate descriptions.
-- If Cursor or Copilot rule files are added later, summarize their actionable rules here.
-- Keep this file synchronized with actual tooling and project structure.
+## What Not To Assume
+- Do not assume production hardening exists just because Docker is present.
+- Do not assume `APP_ENV=production` changes settings behavior; it currently does not.
+- Do not assume `0.0.0.0` is the browser URL during local debugging; it is only the bind address.

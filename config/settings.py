@@ -16,15 +16,23 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+APP_ENV = os.getenv('APP_ENV', 'local')
+IS_LOCAL = APP_ENV == 'local'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-key-cambiar-en-dokploy')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    if IS_LOCAL:
+        SECRET_KEY = 'dev-secret-key-cambiar-en-dokploy'
+    else:
+        raise RuntimeError('DJANGO_SECRET_KEY must be set when APP_ENV is not local')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'True' if IS_LOCAL else 'False') == 'True'
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv(
     'ALLOWED_HOSTS',
@@ -78,8 +86,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'fluency_local'),
+        'USER': os.getenv('DB_USER', 'fluency_local_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
