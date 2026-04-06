@@ -1,0 +1,267 @@
+:root {
+    color-scheme: light;
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-alt: #eef3ff;
+    --text: #1b2430;
+    --muted: #586579;
+    --border: #d7e1f0;
+    --primary: #2954ff;
+    --primary-dark: #1737bb;
+    --success-bg: #eafaf1;
+    --success-text: #17623b;
+    --info-bg: #eef4ff;
+    --info-text: #2248a3;
+    --error-bg: #ffefef;
+    --error-text: #aa2d2d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #f8faff 0%, var(--bg) 100%);
+    color: var(--text);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.shell {
+    width: min(1100px, calc(100% - 2rem));
+    margin: 0 auto;
+}
+
+.site-header {
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+}
+
+.header-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+}
+
+.brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.site-nav {
+    display: flex;
+    gap: 1rem;
+    color: var(--muted);
+}
+
+.page-content {
+    padding: 2rem 0 3rem;
+}
+
+.hero,
+.challenge-header {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.eyebrow,
+.feature-label,
+.meta-label,
+.status-label {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+}
+
+h1,
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.hero-copy,
+.panel-copy,
+.feature-card p,
+.instructions,
+.detail-grid p,
+.status-card p,
+.empty-state p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.panel,
+.feature-card,
+.challenge-card,
+.status-card,
+.empty-state,
+.message {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(28, 48, 93, 0.08);
+}
+
+.panel,
+.challenge-card,
+.empty-state {
+    padding: 1.5rem;
+}
+
+.status-card {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-alt);
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.level-grid,
+.feature-grid,
+.detail-grid,
+.challenge-meta-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.level-grid,
+.feature-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-top: 1rem;
+}
+
+.detail-grid,
+.challenge-meta-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.level-card {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1rem;
+    background: #fbfcff;
+}
+
+.level-card.selected {
+    border-color: var(--primary);
+    background: var(--surface-alt);
+}
+
+.level-code {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: var(--primary-dark);
+}
+
+.button.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.message-stack {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.message {
+    padding: 0.9rem 1rem;
+}
+
+.message.success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.message.info {
+    background: var(--info-bg);
+    color: var(--info-text);
+}
+
+.message.error {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.feature-grid,
+.challenge-card,
+.empty-state {
+    margin-top: 2rem;
+}
+
+.feature-card {
+    padding: 1.25rem;
+}
+
+.meta-value {
+    font-weight: 700;
+}
+
+.constraint-list {
+    padding-left: 1.2rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+    .header-layout,
+    .hero,
+    .challenge-header {
+        grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .header-layout {
+        gap: 0.75rem;
+    }
+
+    .site-nav {
+        flex-wrap: wrap;
+    }
+}

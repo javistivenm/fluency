@@ -1,0 +1,76 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Daily Challenge{% endblock %}
+
+{% block content %}
+<section class="challenge-header">
+    <div>
+        <p class="eyebrow">Daily Challenge</p>
+        <h1>Today's writing prompt for {{ selected_level.code }}</h1>
+        <p class="hero-copy">A single prompt designed to keep your English writing practice consistent and structured.</p>
+    </div>
+    <a class="button secondary" href="{% url 'fluency:home' %}">Change level</a>
+</section>
+
+{% if challenge %}
+    <article class="challenge-card">
+        <div class="challenge-meta-grid">
+            <div>
+                <p class="meta-label">Exercise type</p>
+                <p class="meta-value">{{ challenge.exercise.exercise_type.name }}</p>
+            </div>
+            <div>
+                <p class="meta-label">Topic</p>
+                <p class="meta-value">{{ challenge.exercise.topic.name }}</p>
+            </div>
+            <div>
+                <p class="meta-label">Output format</p>
+                <p class="meta-value">{{ challenge.exercise.output_format.name }}</p>
+            </div>
+            <div>
+                <p class="meta-label">Estimated time</p>
+                <p class="meta-value">{{ challenge.exercise.estimated_time_minutes }} minutes</p>
+            </div>
+        </div>
+
+        <h2>{{ challenge.exercise.title }}</h2>
+        <p class="instructions">{{ challenge.exercise.instructions }}</p>
+
+        <div class="detail-grid">
+            <section>
+                <h3>Practice target</h3>
+                <p>{{ challenge.exercise.pedagogical_goal }}</p>
+            </section>
+            <section>
+                <h3>Grammar focus</h3>
+                <p>{{ challenge.exercise.grammar_focus|default:'Flexible' }}</p>
+            </section>
+            <section>
+                <h3>Writing function</h3>
+                <p>{{ challenge.exercise.writing_function|default:'General writing practice' }}</p>
+            </section>
+            <section>
+                <h3>Word target</h3>
+                <p>{{ challenge.exercise.word_count_min }}-{{ challenge.exercise.word_count_max }} words</p>
+            </section>
+        </div>
+
+        <section>
+            <h3>Constraints</h3>
+            <ul class="constraint-list">
+                {% for exercise_constraint in challenge.exercise.exercise_constraints.all %}
+                    <li>{{ exercise_constraint.constraint.name }}</li>
+                {% empty %}
+                    <li>No extra constraints for today. Focus on clarity and completion.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </article>
+{% else %}
+    <section class="empty-state">
+        <h2>No challenge available yet</h2>
+        <p>Create active exercises in the admin so Fluency can deliver a daily writing prompt for this level.</p>
+        <a class="button" href="/admin/">Open admin</a>
+    </section>
+{% endif %}
+{% endblock %}

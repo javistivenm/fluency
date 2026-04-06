@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.urls import path
-from config.views import home
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
+    path('', include('fluency.urls')),
 ]

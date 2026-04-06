@@ -1,0 +1,59 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | English Writing Practice{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Structured English writing practice</p>
+        <h1>Practice English writing with one focused challenge every day.</h1>
+        <p class="hero-copy">
+            Fluency helps you build a steady writing habit with exercises organized by CEFR level,
+            exercise type, topic, output format, and learning goal.
+        </p>
+
+        {% if selected_level %}
+            <div class="status-card">
+                <p class="status-label">Current level</p>
+                <p class="status-value">{{ selected_level.code }} · {{ selected_level.name }}</p>
+                <a class="button secondary" href="{% url 'fluency:daily-challenge' %}">Continue with today's challenge</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Choose your level</h2>
+        <p class="panel-copy">Your selection is stored in the browser session so the daily challenge stays aligned to your current level.</p>
+        <div class="level-grid">
+            {% for level in levels %}
+                <form method="post" action="{% url 'fluency:set-level' %}" class="level-card{% if selected_level and selected_level.pk == level.pk %} selected{% endif %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="level_code" value="{{ level.code }}">
+                    <p class="level-code">{{ level.code }}</p>
+                    <h3>{{ level.name }}</h3>
+                    <p>{{ level.description }}</p>
+                    <button type="submit" class="button">Start at {{ level.code }}</button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="feature-grid">
+    <article class="feature-card">
+        <p class="feature-label">Mode 1</p>
+        <h2>Daily Challenge</h2>
+        <p>Receive one writing prompt per day with controlled rotation by level and exercise type.</p>
+    </article>
+    <article class="feature-card">
+        <p class="feature-label">Mode 2</p>
+        <h2>Practice by Category</h2>
+        <p>Next iteration: browse opinion, storytelling, description, email, reflection, and more.</p>
+    </article>
+    <article class="feature-card">
+        <p class="feature-label">Mode 3</p>
+        <h2>Practice by Grammar</h2>
+        <p>Next iteration: focus on structures like present simple, past simple, comparatives, and present perfect.</p>
+    </article>
+</section>
+{% endblock %}
