@@ -1,0 +1,23 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Delete{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <p class="eyebrow">Administration</p>
+    <h1>Delete item</h1>
+    <p class="panel-copy">This action cannot be undone. Confirm only if you are sure you want to remove <strong>{{ object }}</strong> from the support library.</p>
+
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        {% if object.media_title %}
+            <a class="button secondary" href="{% url 'support_library:title-detail' object.media_title.slug %}">Cancel</a>
+        {% elif object.season.media_title %}
+            <a class="button secondary" href="{% url 'support_library:title-detail' object.season.media_title.slug %}">Cancel</a>
+        {% else %}
+            <a class="button secondary" href="{% url 'support_library:manage-title-list' %}">Cancel</a>
+        {% endif %}
+        <button type="submit" class="button danger">Delete permanently</button>
+    </form>
+</section>
+{% endblock %}

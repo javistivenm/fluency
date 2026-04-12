@@ -1,0 +1,38 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | {{ episode.title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Support Library</p>
+            <h1>{{ episode.season.media_title.title }}</h1>
+            <p class="panel-copy">Season {{ episode.season.number }} · Episode {{ episode.number }} · {{ episode.title }}</p>
+            <div class="card-badges compact-badges">
+                <span class="pill {% if episode.status == 'published' %}success-pill{% else %}muted-pill{% endif %}">{{ episode.get_status_display }}</span>
+                {% if not episode.is_active %}
+                    <span class="pill danger-pill">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="title-actions">
+            <a class="button secondary" href="{% url 'support_library:title-detail' episode.season.media_title.slug %}">Back to title</a>
+            {% if perms.support_library.change_episode %}
+                <a class="button secondary" href="{% url 'support_library:manage-episode-update' episode.pk %}">Edit episode</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <article class="rich-content">{{ episode.content|safe }}</article>
+
+    <div class="episode-nav">
+        {% if previous_episode %}
+            <a class="button secondary" href="{% url 'support_library:episode-detail' episode.season.media_title.slug episode.season.number previous_episode.number %}">Previous episode</a>
+        {% endif %}
+        {% if next_episode %}
+            <a class="button secondary" href="{% url 'support_library:episode-detail' episode.season.media_title.slug episode.season.number next_episode.number %}">Next episode</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

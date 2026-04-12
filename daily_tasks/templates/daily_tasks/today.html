@@ -1,0 +1,71 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Daily Tasks{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-main">
+        <p class="eyebrow">Daily Tasks</p>
+        <h1>Your daily habit tracker</h1>
+        <p class="lead">Keep your English habits visible every day and mark each task as you complete it. This module is intentionally direct: open it, see the routine, and move.</p>
+        <div class="hero-actions">
+            {% if perms.daily_tasks.view_dailytask %}
+                <a class="button secondary" href="{% url 'daily_tasks:manage-task-list' %}">Manage tasks</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="page-hero-aside">
+        <article class="status-card progress-card">
+            <p class="status-label">Today</p>
+            <p class="status-value">{{ current_date|date:'F j, Y' }}</p>
+            <p>{{ completed_count }} of {{ total_count }} completed today.</p>
+            <div class="progress-bar" aria-hidden="true">
+                <span class="progress-fill" style="width: {{ progress_percentage }}%"></span>
+            </div>
+            <p class="progress-summary">{{ progress_percentage }}% done</p>
+        </article>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Daily Tasks</p>
+            <h2>Today's routine</h2>
+            <p class="panel-copy">Each card represents one habit for today only. Completing a task marks the current date without affecting your previous history.</p>
+        </div>
+    </div>
+
+    <div class="task-list">
+        {% for task_row in task_rows %}
+            <article class="task-card {% if task_row.is_completed %}task-completed{% endif %}">
+                <div>
+                    <p class="feature-label">Task {{ task_row.task.sort_order }}</p>
+                    <h2>{{ task_row.task.name }}</h2>
+                    <p class="panel-copy">{{ task_row.task.description|default:'No extra description for this task yet.' }}</p>
+                </div>
+                <div class="task-actions">
+                    {% if task_row.is_completed %}
+                        <span class="pill success-pill">Completed</span>
+                    {% else %}
+                        <span class="pill muted-pill">Pending</span>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'daily_tasks:toggle-task-status' task_row.task.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="completed" value="{% if task_row.is_completed %}false{% else %}true{% endif %}">
+                        <button type="submit" class="button {% if task_row.is_completed %}secondary{% endif %}">
+                            {% if task_row.is_completed %}Mark as pending{% else %}Mark completed{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </article>
+        {% empty %}
+            <section class="empty-state compact-state">
+                <h2>No active tasks yet</h2>
+                <p>Ask an admin to activate at least one daily task so your routine can start here.</p>
+            </section>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

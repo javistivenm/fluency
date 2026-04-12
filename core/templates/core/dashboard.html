@@ -1,0 +1,66 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Dashboard{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-main">
+        <p class="eyebrow">Learning Dashboard</p>
+        <h1>Your English practice, organized like a studio.</h1>
+        <p class="lead">Move between writing, reading support, and daily habits without losing context. Each module keeps a clear purpose, a calmer rhythm, and a shared Fluency visual language.</p>
+        <div class="hero-actions">
+            <a class="button" href="{% url 'fluency:home' %}">Start writing today</a>
+            <a class="button secondary" href="{% url 'daily_tasks:today' %}">Review daily habits</a>
+        </div>
+    </div>
+    <div class="page-hero-aside">
+        <article class="hero-aside-card">
+            <p class="status-label">Modules</p>
+            <p class="status-value">3 learning spaces</p>
+            <p class="panel-copy">Writing practice, support reading, and habit tracking work as one product instead of separate tools.</p>
+        </article>
+        <article class="hero-aside-card">
+            <p class="status-label">Study rhythm</p>
+            <p class="status-value">Short, repeatable sessions</p>
+            <p class="panel-copy">The interface now favors orientation, progress visibility, and fast switching between modules.</p>
+        </article>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <article class="feature-card">
+        <p class="feature-label">Writing</p>
+        <h2>Writing Practice Daily</h2>
+        <p>Practice English writing with one focused challenge every day, aligned to your current level and clearly framed by goals, constraints, and output format.</p>
+        <div class="card-actions">
+            <a class="button" href="{% url 'fluency:home' %}">Open writing studio</a>
+        </div>
+    </article>
+    <article class="feature-card">
+        <p class="feature-label">Reading Support</p>
+        <h2>Support Library</h2>
+        <p>Read support material for series and movies before watching, with browsing, search, and a reading-focused structure that keeps the content easy to scan.</p>
+        <div class="card-actions">
+            <a class="button" href="{% url 'support_library:catalog' %}">Open library</a>
+        </div>
+    </article>
+    <article class="feature-card">
+        <p class="feature-label">Habits</p>
+        <h2>Daily Tasks</h2>
+        <p>Track the recurring English habits you want to complete every day, check your progress, and keep the routine visible without extra friction.</p>
+        <div class="card-actions">
+            <a class="button" href="{% url 'daily_tasks:today' %}">Open habit tracker</a>
+        </div>
+    </article>
+    {% if perms.accounts.view_user %}
+        <article class="feature-card">
+            <p class="feature-label">Administration</p>
+            <h2>User management</h2>
+            <p>Create, edit, and organize access across the Fluency platform from a consistent management surface.</p>
+            <div class="card-actions">
+                <a class="button secondary" href="{% url 'accounts:user-list' %}">Manage users</a>
+            </div>
+        </article>
+    {% endif %}
+</section>
+{% endblock %}

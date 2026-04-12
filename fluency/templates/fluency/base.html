@@ -6,15 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Fluency{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'fluency/styles.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="module-{% firstof request.resolver_match.namespace 'public' %}">
     <header class="site-header">
-        <div class="shell header-layout">
-            <a class="brand" href="{% url 'fluency:home' %}">Fluency</a>
-            <nav class="site-nav">
-                <a href="{% url 'fluency:home' %}">Home</a>
-                <a href="{% url 'fluency:daily-challenge' %}">Daily Challenge</a>
+        <div class="shell topbar">
+            <a class="brand" href="{% url 'core:root' %}">
+                <span class="brand-mark">Fluency</span>
+                <span class="brand-note">English Learning Studio</span>
+            </a>
+            <nav class="site-nav" aria-label="Primary navigation">
+                {% if user.is_authenticated %}
+                    <a class="nav-link{% if request.resolver_match.namespace == 'core' %} is-active{% endif %}" href="{% url 'core:dashboard' %}" {% if request.resolver_match.namespace == 'core' %}aria-current="page"{% endif %}>Dashboard</a>
+                    <a class="nav-link{% if request.resolver_match.namespace == 'fluency' %} is-active{% endif %}" href="{% url 'fluency:home' %}" {% if request.resolver_match.namespace == 'fluency' %}aria-current="page"{% endif %}>Writing Studio</a>
+                    <a class="nav-link{% if request.resolver_match.namespace == 'support_library' %} is-active{% endif %}" href="{% url 'support_library:catalog' %}" {% if request.resolver_match.namespace == 'support_library' %}aria-current="page"{% endif %}>Library</a>
+                    <a class="nav-link{% if request.resolver_match.namespace == 'daily_tasks' %} is-active{% endif %}" href="{% url 'daily_tasks:today' %}" {% if request.resolver_match.namespace == 'daily_tasks' %}aria-current="page"{% endif %}>Daily Habits</a>
+                    {% if perms.accounts.view_user %}
+                        <a class="nav-link{% if request.resolver_match.namespace == 'accounts' %} is-active{% endif %}" href="{% url 'accounts:user-list' %}" {% if request.resolver_match.namespace == 'accounts' %}aria-current="page"{% endif %}>Administration</a>
+                    {% endif %}
+                {% else %}
+                    <a class="nav-link{% if request.resolver_match.namespace == 'accounts' %} is-active{% endif %}" href="{% url 'accounts:login' %}" {% if request.resolver_match.namespace == 'accounts' %}aria-current="page"{% endif %}>Sign in</a>
+                {% endif %}
             </nav>
+            {% if user.is_authenticated %}
+                <div class="session-chip">
+                    <span class="session-dot" aria-hidden="true"></span>
+                    <span>{{ user.username }}</span>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="nav-inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-button">Logout</button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="session-chip">
+                    <span class="session-dot" aria-hidden="true"></span>
+                    <span>Guest session</span>
+                </div>
+            {% endif %}
         </div>
     </header>
 

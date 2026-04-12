@@ -1,15 +1,24 @@
 {% extends 'fluency/base.html' %}
 
-{% block title %}Fluency | Daily Challenge{% endblock %}
+{% block title %}Fluency | Writing Practice Daily{% endblock %}
 
 {% block content %}
-<section class="challenge-header">
-    <div>
+<section class="page-hero">
+    <div class="page-hero-main">
         <p class="eyebrow">Daily Challenge</p>
         <h1>Today's writing prompt for {{ selected_level.code }}</h1>
-        <p class="hero-copy">A single prompt designed to keep your English writing practice consistent and structured.</p>
+        <p class="lead">A single prompt designed to keep your English writing practice consistent, structured, and easy to return to every day.</p>
+        <div class="hero-actions">
+            <a class="button secondary" href="{% url 'fluency:home' %}">Change level</a>
+        </div>
     </div>
-    <a class="button secondary" href="{% url 'fluency:home' %}">Change level</a>
+    <div class="page-hero-aside">
+        <article class="hero-aside-card">
+            <p class="status-label">Session level</p>
+            <p class="status-value">{{ selected_level.code }} · {{ selected_level.name }}</p>
+            <p class="panel-copy">Use this page as today's writing brief. The layout keeps the prompt, targets, and constraints in one readable surface.</p>
+        </article>
+    </div>
 </section>
 
 {% if challenge %}
@@ -69,8 +78,13 @@
 {% else %}
     <section class="empty-state">
         <h2>No challenge available yet</h2>
-        <p>Create active exercises in the admin so Fluency can deliver a daily writing prompt for this level.</p>
-        <a class="button" href="/admin/">Open admin</a>
+        <p>There is no active exercise ready for this level today. If you manage Fluency content, publish or activate exercises for this level so the daily prompt can be generated.</p>
+        <div class="empty-actions">
+            <a class="button secondary" href="{% url 'fluency:home' %}">Pick another level</a>
+            {% if perms.fluency.change_exercise or user.is_staff %}
+                <a class="button" href="{% url 'admin:index' %}">Open admin</a>
+            {% endif %}
+        </div>
     </section>
 {% endif %}
 {% endblock %}

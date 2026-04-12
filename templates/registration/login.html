@@ -1,0 +1,32 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Login{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <p class="eyebrow">Welcome Back</p>
+    <h1>Sign in</h1>
+    <p class="panel-copy">Use your Fluency account to enter the writing studio, support library, and daily habit tracker from one shared learning workspace.</p>
+
+    <form method="post" class="stack-form">
+        {% csrf_token %}
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="button">Sign in</button>
+    </form>
+</section>
+{% endblock %}

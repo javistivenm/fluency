@@ -1,0 +1,36 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Episode{% endblock %}
+
+{% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <p class="eyebrow">Administration</p>
+    <h1>{% if object %}Edit episode{% else %}Create episode{% endif %}</h1>
+    <p class="panel-copy">{{ media_title.title }} · Season {{ season.number }}</p>
+
+    <form method="post" class="stack-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <a class="button secondary" href="{% url 'support_library:title-detail' media_title.slug %}">Cancel</a>
+            <button type="submit" class="button">Save episode</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

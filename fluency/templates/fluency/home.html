@@ -1,27 +1,37 @@
 {% extends 'fluency/base.html' %}
 
-{% block title %}Fluency | English Writing Practice{% endblock %}
+{% block title %}Fluency | Writing Practice Daily{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div>
-        <p class="eyebrow">Structured English writing practice</p>
-        <h1>Practice English writing with one focused challenge every day.</h1>
-        <p class="hero-copy">
-            Fluency helps you build a steady writing habit with exercises organized by CEFR level,
-            exercise type, topic, output format, and learning goal.
-        </p>
+<section class="page-hero">
+    <div class="page-hero-main">
+        <p class="eyebrow">Writing Practice Daily</p>
+        <h1>One writing prompt a day, framed with purpose.</h1>
+        <p class="lead">Choose your CEFR level once and keep a steady English writing routine. Each daily brief gives you a topic, a structure, and a teaching goal without turning the page into noise.</p>
 
         {% if selected_level %}
             <div class="status-card">
                 <p class="status-label">Current level</p>
                 <p class="status-value">{{ selected_level.code }} · {{ selected_level.name }}</p>
-                <a class="button secondary" href="{% url 'fluency:daily-challenge' %}">Continue with today's challenge</a>
+                <p class="panel-copy">Your selection stays in the current browser session, so you can continue directly from where you left off.</p>
+                <div class="hero-actions">
+                    <a class="button secondary" href="{% url 'fluency:daily-challenge' %}">Continue today's prompt</a>
+                </div>
             </div>
         {% endif %}
+
+        <div class="hero-actions">
+            <a class="button secondary" href="{% url 'core:dashboard' %}">Back to dashboard</a>
+        </div>
     </div>
 
-    <div class="panel">
+    <div class="page-hero-aside">
+        <article class="hero-aside-card">
+            <p class="status-label">Practice model</p>
+            <p class="status-value">Short, repeatable writing</p>
+            <p class="panel-copy">Daily prompts are intentionally narrow so learners can focus on completion, clarity, and habit before complexity.</p>
+        </article>
+        <article class="hero-aside-card">
         <h2>Choose your level</h2>
         <p class="panel-copy">Your selection is stored in the browser session so the daily challenge stays aligned to your current level.</p>
         <div class="level-grid">
@@ -36,24 +46,25 @@
                 </form>
             {% endfor %}
         </div>
+        </article>
     </div>
 </section>
 
 <section class="feature-grid">
     <article class="feature-card">
-        <p class="feature-label">Mode 1</p>
+        <p class="feature-label">Daily structure</p>
         <h2>Daily Challenge</h2>
-        <p>Receive one writing prompt per day with controlled rotation by level and exercise type.</p>
+        <p>Receive one focused prompt per day with controlled rotation by level and exercise type, so practice feels stable instead of random.</p>
     </article>
     <article class="feature-card">
-        <p class="feature-label">Mode 2</p>
-        <h2>Practice by Category</h2>
-        <p>Next iteration: browse opinion, storytelling, description, email, reflection, and more.</p>
+        <p class="feature-label">Level continuity</p>
+        <h2>CEFR alignment</h2>
+        <p>The module keeps your selected level visible so the writing brief, tone, and output size stay matched to your current stage.</p>
     </article>
     <article class="feature-card">
-        <p class="feature-label">Mode 3</p>
-        <h2>Practice by Grammar</h2>
-        <p>Next iteration: focus on structures like present simple, past simple, comparatives, and present perfect.</p>
+        <p class="feature-label">Clear brief</p>
+        <h2>What to write and why</h2>
+        <p>Every prompt surfaces topic, format, grammar focus, and pedagogical goal so the learner understands the exercise before starting.</p>
     </article>
 </section>
 {% endblock %}

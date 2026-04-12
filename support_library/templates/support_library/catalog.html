@@ -1,0 +1,100 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Support Library{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="page-hero-main">
+        <p class="eyebrow">Support Library</p>
+        <h1>Reading support for series and movies.</h1>
+        <p class="lead">Browse titles and read support content before watching. This module is designed to feel calmer than a content database and clearer than a generic admin listing.</p>
+        <div class="hero-actions">
+            {% if perms.support_library.view_mediatitle %}
+                <a class="button secondary" href="{% url 'support_library:manage-title-list' %}">Manage library</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="page-hero-aside">
+        <article class="hero-aside-card">
+            <p class="status-label">Use case</p>
+            <p class="status-value">Prepare before you watch</p>
+            <p class="panel-copy">Titles, seasons, and episodes are organized to reinforce vocabulary, grammar, and context without overwhelming the learner.</p>
+        </article>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Support Library</p>
+            <h2>Browse titles</h2>
+            <p class="panel-copy">Filter by type, search by title or content, and open the support page that matches what you want to study.</p>
+        </div>
+    </div>
+
+    <form method="get" class="filter-panel">
+        <div class="filter-row">
+            <div class="filter-field wide-field">
+                <label for="library-search">Search titles</label>
+                <input id="library-search" type="text" name="q" value="{{ current_query }}" placeholder="Search by title or description">
+            </div>
+            <div class="filter-field">
+                <label for="kind-filter">Type</label>
+                <select id="kind-filter" name="kind">
+                    <option value="">All</option>
+                    <option value="series" {% if current_kind == 'series' %}selected{% endif %}>Series</option>
+                    <option value="movie" {% if current_kind == 'movie' %}selected{% endif %}>Movie</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="sort-filter">Order by</label>
+                <select id="sort-filter" name="sort">
+                    <option value="alpha" {% if current_sort == 'alpha' %}selected{% endif %}>Alphabetical</option>
+                    <option value="recent" {% if current_sort == 'recent' %}selected{% endif %}>Most recent</option>
+                    <option value="published" {% if current_sort == 'published' %}selected{% endif %}>Latest published</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="button">Apply filters</button>
+                <a class="button secondary" href="{% url 'support_library:catalog' %}">Clear</a>
+            </div>
+        </div>
+        <p class="result-summary">{{ results_count }} title{{ results_count|pluralize }} found.</p>
+    </form>
+
+    <div class="feature-grid">
+        {% for media_title in titles %}
+            <article class="feature-card">
+                <div class="card-badges">
+                    <p class="feature-label">{{ media_title.get_kind_display }}</p>
+                    {% if media_title.kind == 'series' %}
+                        <span class="pill muted-pill">{{ media_title.seasons_count }} season{{ media_title.seasons_count|pluralize }}</span>
+                        <span class="pill muted-pill">{{ media_title.published_episodes_count }} episode{{ media_title.published_episodes_count|pluralize }} ready</span>
+                    {% else %}
+                        <span class="pill muted-pill">Single reading guide</span>
+                    {% endif %}
+                </div>
+                <h2>{{ media_title.title }}</h2>
+                <p>{{ media_title.summary|default:'No summary yet.' }}</p>
+                {% if not media_title.is_active %}
+                    <p class="status-inline">Inactive</p>
+                {% endif %}
+                {% if current_query and media_title.matched_episode_count %}
+                    <p class="panel-copy">{{ media_title.matched_episode_count }} matching episode{{ media_title.matched_episode_count|pluralize }} for "{{ current_query }}".</p>
+                {% endif %}
+                <a class="button" href="{% url 'support_library:title-detail' media_title.slug %}">Open title</a>
+            </article>
+        {% empty %}
+            <article class="empty-state">
+                <h2>No titles available yet</h2>
+                <p>Add your first movie or series from the management area.</p>
+                {% if perms.support_library.add_mediatitle %}
+                    <div class="empty-actions">
+                        <a class="button" href="{% url 'support_library:manage-title-create' %}">Create first title</a>
+                    </div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

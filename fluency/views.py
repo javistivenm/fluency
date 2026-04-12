@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .models import Level
 from .selectors import get_or_create_daily_challenge, get_selected_level
 
 
+@login_required
 def home(request):
     levels = Level.objects.filter(is_active=True)
     selected_level = get_selected_level(request)
@@ -18,6 +20,7 @@ def home(request):
     )
 
 
+@login_required
 def set_level(request):
     if request.method != 'POST':
         return redirect('fluency:home')
@@ -34,6 +37,7 @@ def set_level(request):
     return redirect('fluency:daily-challenge')
 
 
+@login_required
 def daily_challenge(request):
     selected_level = get_selected_level(request)
     if selected_level is None:

@@ -1,0 +1,114 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | {{ media_title.title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Support Library</p>
+            <h1>{{ media_title.title }}</h1>
+            <p class="panel-copy">{{ media_title.summary|default:'No summary available yet.' }}</p>
+            <div class="card-badges">
+                <span class="pill">{{ media_title.get_kind_display }}</span>
+                {% if media_title.is_active %}
+                    <span class="pill success-pill">Active</span>
+                {% else %}
+                    <span class="pill danger-pill">Inactive</span>
+                {% endif %}
+                {% if media_title.kind == 'series' %}
+                    <span class="pill muted-pill">{{ season_count }} season{{ season_count|pluralize }}</span>
+                    <span class="pill muted-pill">{{ visible_episode_count }} visible episode{{ visible_episode_count|pluralize }}</span>
+                {% else %}
+                    <span class="pill muted-pill">{{ media_title.get_movie_content_status_display }}</span>
+                {% endif %}
+            </div>
+        </div>
+            <div class="title-actions">
+                <a class="button secondary" href="{% url 'support_library:catalog' %}">Back to catalog</a>
+                {% if can_manage_library %}
+                    <a class="button secondary" href="{% url 'support_library:manage-title-update' media_title.slug %}">Edit title</a>
+                {% if media_title.kind == 'series' %}
+                    <a class="button" href="{% url 'support_library:manage-season-create' media_title.slug %}">Add season</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if media_title.kind == 'movie' %}
+        {% if show_movie_content %}
+            <article class="rich-content">{{ media_title.movie_content|safe }}</article>
+        {% else %}
+            <section class="empty-state compact-state">
+                <h2>Movie support content is not published yet</h2>
+                <p>Come back later or publish the support text from the management area.</p>
+            </section>
+        {% endif %}
+    {% else %}
+        <form method="get" class="filter-panel compact-filter-panel">
+            <div class="filter-row">
+                <div class="filter-field wide-field">
+                    <label for="episode-search">Search inside episode guides</label>
+                    <input id="episode-search" type="text" name="q" value="{{ episode_query }}" placeholder="Search vocabulary, phrases, grammar notes, or episode titles">
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="button">Search episodes</button>
+                    <a class="button secondary" href="{% url 'support_library:title-detail' media_title.slug %}">Clear</a>
+                </div>
+            </div>
+            <p class="result-summary">{{ visible_episode_count }} visible episode{{ visible_episode_count|pluralize }}{% if episode_query %} matching "{{ episode_query }}"{% endif %}.</p>
+        </form>
+
+        <div class="season-stack">
+            {% for season in seasons %}
+                <section class="panel nested-panel">
+                    <div class="section-header">
+                        <div>
+                            <p class="feature-label">Season {{ season.number }}</p>
+                            <h2>{{ season.title|default:'Untitled season' }}</h2>
+                            <p class="panel-copy">{{ season.visible_episode_count }} visible episode{{ season.visible_episode_count|pluralize }}</p>
+                        </div>
+                        {% if can_manage_library %}
+                            <div class="title-actions">
+                                <a class="button secondary" href="{% url 'support_library:manage-season-update' season.pk %}">Edit season</a>
+                                <a class="button" href="{% url 'support_library:manage-episode-create' season.pk %}">Add episode</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="episode-list">
+                        {% for episode in season.episodes.all %}
+                            <article class="episode-card">
+                                <div>
+                                    <p class="feature-label">Episode {{ episode.number }}</p>
+                                    <h3>{{ episode.title }}</h3>
+                                    <div class="card-badges compact-badges">
+                                        <span class="pill {% if episode.status == 'published' %}success-pill{% else %}muted-pill{% endif %}">{{ episode.get_status_display }}</span>
+                                        {% if not episode.is_active %}
+                                            <span class="pill danger-pill">Inactive</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <a class="button secondary" href="{% url 'support_library:episode-detail' media_title.slug season.number episode.number %}">Read</a>
+                                    {% if can_manage_library %}
+                                        <a class="button secondary" href="{% url 'support_library:manage-episode-update' episode.pk %}">Edit</a>
+                                        <a class="button secondary danger-button" href="{% url 'support_library:manage-episode-delete' episode.pk %}">Delete</a>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        {% empty %}
+                            <p class="panel-copy">No visible episodes yet for this season.</p>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% empty %}
+                <section class="empty-state compact-state">
+                    <h2>No seasons available yet</h2>
+                    <p>Add the first season to start organizing support content for this series.</p>
+                </section>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

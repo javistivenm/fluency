@@ -1,0 +1,57 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Support Library Title{% endblock %}
+
+{% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <p class="eyebrow">Administration</p>
+    <h1>{% if object %}Edit title{% else %}Create title{% endif %}</h1>
+    <p class="panel-copy">Use movies for one global support text. Use series when the support content belongs to seasons and episodes.</p>
+
+    <form method="post" class="stack-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        {% for field in form %}
+            <div class="form-row" data-field="{{ field.name }}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <a class="button secondary" href="{% url 'support_library:manage-title-list' %}">Cancel</a>
+            <button type="submit" class="button">Save title</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var kindField = document.getElementById('id_kind');
+        var movieStatusRow = document.querySelector('[data-field="movie_content_status"]');
+        var movieContentRow = document.querySelector('[data-field="movie_content"]');
+
+        if (!kindField || !movieStatusRow || !movieContentRow) {
+            return;
+        }
+
+        function toggleMovieFields() {
+            var isMovie = kindField.value === 'movie';
+            movieStatusRow.style.display = isMovie ? 'grid' : 'none';
+            movieContentRow.style.display = isMovie ? 'grid' : 'none';
+        }
+
+        kindField.addEventListener('change', toggleMovieFields);
+        toggleMovieFields();
+    });
+</script>
+{% endblock %}

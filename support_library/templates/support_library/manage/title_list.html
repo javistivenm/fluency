@@ -1,0 +1,103 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Manage Support Library{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Administration</p>
+            <h1>Manage Support Library</h1>
+            <p class="panel-copy">Create and organize support content for series and movies.</p>
+        </div>
+        <div class="form-actions">
+            <a class="button secondary" href="{% url 'support_library:catalog' %}">View public catalog</a>
+            <a class="button" href="{% url 'support_library:manage-title-create' %}">Create title</a>
+        </div>
+    </div>
+
+    <form method="get" class="filter-panel compact-filter-panel">
+        <div class="filter-row">
+            <div class="filter-field wide-field">
+                <label for="manage-search">Search titles</label>
+                <input id="manage-search" type="text" name="q" value="{{ current_query }}" placeholder="Search by title or summary">
+            </div>
+            <div class="filter-field">
+                <label for="manage-kind">Type</label>
+                <select id="manage-kind" name="kind">
+                    <option value="">All</option>
+                    <option value="series" {% if current_kind == 'series' %}selected{% endif %}>Series</option>
+                    <option value="movie" {% if current_kind == 'movie' %}selected{% endif %}>Movie</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="manage-state">Visibility</label>
+                <select id="manage-state" name="state">
+                    <option value="">All</option>
+                    <option value="active" {% if current_state == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if current_state == 'inactive' %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="manage-sort">Order by</label>
+                <select id="manage-sort" name="sort">
+                    <option value="alpha" {% if current_sort == 'alpha' %}selected{% endif %}>Alphabetical</option>
+                    <option value="recent" {% if current_sort == 'recent' %}selected{% endif %}>Most recent</option>
+                    <option value="published" {% if current_sort == 'published' %}selected{% endif %}>Latest published</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="button">Apply filters</button>
+                <a class="button secondary" href="{% url 'support_library:manage-title-list' %}">Clear</a>
+            </div>
+        </div>
+        <p class="result-summary">{{ results_count }} title{{ results_count|pluralize }} in this view.</p>
+    </form>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Seasons</th>
+                    <th>Episodes</th>
+                    <th>Published</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for media_title in titles %}
+                    <tr>
+                        <td>{{ media_title.title }}</td>
+                        <td>{{ media_title.get_kind_display }}</td>
+                        <td>
+                            {% if media_title.is_active %}
+                                <span class="pill success-pill">Active</span>
+                            {% else %}
+                                <span class="pill danger-pill">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ media_title.seasons_count }}</td>
+                        <td>{{ media_title.published_episodes_count }} / {{ media_title.episodes_count }}</td>
+                        <td>{{ media_title.latest_publication_at|date:'Y-m-d H:i'|default:'-' }}</td>
+                        <td class="actions-cell">
+                            <a class="button secondary action-button" href="{% url 'support_library:title-detail' media_title.slug %}">Open</a>
+                            <a class="button secondary action-button" href="{% url 'support_library:manage-title-update' media_title.slug %}">Edit</a>
+                            {% if media_title.kind == 'series' %}
+                                <a class="button secondary action-button" href="{% url 'support_library:manage-season-create' media_title.slug %}">Add season</a>
+                            {% endif %}
+                            <a class="button secondary action-button danger-button" href="{% url 'support_library:manage-title-delete' media_title.slug %}">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="table-empty">No titles created yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

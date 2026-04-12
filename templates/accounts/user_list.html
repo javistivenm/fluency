@@ -1,0 +1,56 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Users{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="section-header">
+        <div>
+            <p class="eyebrow">Administration</p>
+            <h1>Users</h1>
+            <p class="panel-copy">Manage access for learners and admins from the same interface style used across the rest of Fluency.</p>
+        </div>
+        <a class="button" href="{% url 'accounts:user-create' %}">Create user</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in users %}
+                    <tr>
+                        <td>{{ account.username }}</td>
+                        <td>{{ account.first_name }} {{ account.last_name }}</td>
+                        <td>{{ account.email|default:'-' }}</td>
+                        <td>{{ account.groups.first.name|default:'-' }}</td>
+                        <td>
+                            {% if account.is_active %}
+                                <span class="pill success-pill">Active</span>
+                            {% else %}
+                                <span class="pill danger-pill">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <a class="button secondary action-button" href="{% url 'accounts:user-update' account.pk %}">Edit user</a>
+                            <a class="button secondary action-button danger-button" href="{% url 'accounts:user-delete' account.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="table-empty">No users found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

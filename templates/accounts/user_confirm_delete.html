@@ -1,0 +1,17 @@
+{% extends 'fluency/base.html' %}
+
+{% block title %}Fluency | Delete User{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+    <p class="eyebrow">Administration</p>
+    <h1>Delete user</h1>
+    <p class="panel-copy">This action permanently removes <strong>{{ object.username }}</strong>. Make sure the account is no longer needed before you continue.</p>
+
+    <form method="post" class="form-actions">
+        {% csrf_token %}
+        <a class="button secondary" href="{% url 'accounts:user-list' %}">Cancel</a>
+        <button type="submit" class="button danger">Delete user</button>
+    </form>
+</section>
+{% endblock %}
